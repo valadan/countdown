@@ -18,7 +18,11 @@ object solution {
   }
   
   case class Mult(x :Expression, y :Expression) extends Expression {
-    def valid = x.apply <= y.apply
+    def valid = {
+      val lhs = x.apply
+      val rhs = y.apply
+      lhs <= rhs && lhs != 1 && rhs != 1
+    }
     def apply=x.apply * y.apply
   }
   
@@ -28,7 +32,11 @@ object solution {
   }
 
   case class Div(x :Expression, y :Expression) extends Expression {
-    override def valid = x.apply % y.apply == 0
+    def valid = {
+      val lhs = x.apply
+      val rhs = y.apply
+      lhs % rhs == 0 && rhs != 1
+    }
     def apply = x.apply / y.apply
   }
   
