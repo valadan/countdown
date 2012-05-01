@@ -3,25 +3,27 @@ package countdown
 object solution {
 
   sealed abstract case class Expression {
-    def valid=true
+    def valid:Boolean
 	def apply:Int
   }
     
   case class Literal( x :Int ) extends Expression {
-    override def valid = x > 0
+    def valid = x > 0
     def apply = x
   }
   
   case class Add(x :Expression, y :Expression) extends Expression {
+    def valid = x.apply <= y.apply
     def apply=x.apply + y.apply
   }
   
   case class Mult(x :Expression, y :Expression) extends Expression {
+    def valid = x.apply <= y.apply
     def apply=x.apply * y.apply
   }
   
   case class Sub(x :Expression, y :Expression) extends Expression {
-    override def valid = x.apply > y.apply
+    def valid = x.apply > y.apply
     def apply=x.apply - y.apply
   }
 
