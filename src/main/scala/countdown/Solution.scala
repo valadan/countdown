@@ -40,7 +40,7 @@ object solution {
     def apply = x.apply / y.apply
   }
   
-  def split(a:List[Int]) : List[(List[Int],List[Int])] = a match {
+  def split(l:List[Int]) : List[(List[Int],List[Int])] = l match {
     case Nil => List((Nil, Nil))
     case x::xs => List((Nil,x::xs)) ::: (split(xs) map (tuple => ((x::tuple._1,tuple._2))))
   }
@@ -50,13 +50,9 @@ object solution {
   def nesplit(a:List[Int]): List[(List[Int],List[Int])] = split(a) filter nonEmpty
   
   type Result = (Expression, Int)
-
-  def construct(l:Expression, x:Int, r:Expression, y:Int): List[Result] = {
-    List(Add(l,r),Sub(l,r),Mult(l,r),Div(l,r)) filter (e => e.valid) map (e => (e, e.apply))
-  }
   
   def combine(lx:Result, ry:Result):List[Result] = (lx,ry) match {
-    case ((l,x),(r,y)) => construct(l,x,r,y)
+    case ((l,_),(r,_)) => List(Add(l,r),Sub(l,r),Mult(l,r),Div(l,r)) filter (_.valid) map (e => (e, e.apply))
   }
   
   def results(ns:List[Int]): List[Result] = ns match {
@@ -71,17 +67,17 @@ object solution {
   
   def interleave(x:Int, xs:List[Int]):List[List[Int]] = (x,xs) match {
     case (x,Nil) => List(List(x))
-    case (x, y :: ys) => List(x :: y :: ys) ::: ((interleave(x,ys)) map (l => y::l))
+    case (x, y :: ys) => List(x :: y :: ys) ::: ((interleave(x,ys)) map ( y::_))
   }
   
-  def perms(a:List[Int]):List[List[Int]] = a match {
+  def perms(l:List[Int]):List[List[Int]] = l match {
     case Nil => List(List())
-    case (x::xs) => (perms(xs) map (l => interleave(x,l))).flatten
+    case (x::xs) => for(p0 <- perms(xs); p1 <- interleave(x, p0)) yield p1
   }
   
-  def subs(a:List[Int]):List[List[Int]] = a match {
+  def subs(l:List[Int]):List[List[Int]] = l match {
     case Nil => List(List())
-    case x::xs => subs(xs) ::: (subs(xs) map (l => x::l))
+    case x::xs => subs(xs) ::: (subs(xs) map (x::_))
   }
   
   def subbags(xs:List[Int]):List[List[Int]] = 
